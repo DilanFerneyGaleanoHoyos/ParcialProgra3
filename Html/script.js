@@ -149,8 +149,7 @@ function mostrarEmpleados() {
     const fila = document.createElement('tr');
     fila.innerHTML = `
       <td>${empleado.id}</td>
-      <td>${empleado.apellidos}</td>
-      <td>${empleado.nombres}</td>
+      <td>${empleado.apellidos} ${empleado.nombres}</td>
       <td>${empleado.departamento}</td>
       <td>${empleado.municipio}</td>
       <td>${empleado.fechaNacimiento}</td>
@@ -159,11 +158,14 @@ function mostrarEmpleados() {
       <td>
         <button class="btn btn-primary" onclick="toggleEmployeeStatus(${empleado.id})">Estado</button>
         <button class="btn btn-primary" onclick="editEmployee(${empleado.id})">Editar</button>
+        <button class="btn btn-danger" onclick="deleteEmployee(${empleado.id})">Eliminar</button>
+
       </td>
     `;
     tablaEmpleados.appendChild(fila);
   });
 }
+
 
 function openEmployeeDetailsModal(employee) {
   const modalTitle = document.getElementById('employeeDetailsModalLabel');
@@ -193,6 +195,23 @@ document.getElementById('searchButton').addEventListener('click', () => {
     alert('Empleado no encontrado. Por favor, intente con otro ID.');
   }
 });
+
+// ...
+
+// ...
+
+
+
+
+// ...
+
+function deleteEmployee(id) {
+  if (confirm('¿Seguro que deseas eliminar a este empleado?')) {
+    empleados = empleados.filter(emp => emp.id !== id); // Filtrar empleados para eliminar el que coincide
+    guardarEmpleadosEnLocalStorage(); // Actualizar la lista en el almacenamiento local
+    mostrarEmpleados(); // Actualizar la tabla
+  }
+}
 
 
 mostrarEmpleados();
