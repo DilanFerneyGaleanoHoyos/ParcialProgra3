@@ -104,54 +104,44 @@ function guardarEmpleadosEnLocalStorage() {
 
 
 
-function openEditModal(id) {
+function editEmployee(id) {
   const employee = empleados.find(emp => emp.id === id);
   if (employee) {
-    // Populate the edit form with employee details
-    document.getElementById('editApellidos').value = employee.apellidos;
-    document.getElementById('editNombres').value = employee.nombres;
-    document.getElementById('editDepartamento').value = employee.departamento;
-    document.getElementById('editMunicipio').value = employee.municipio;
-    document.getElementById('editFechaNacimiento').value = employee.fechaNacimiento;
-    document.getElementById('editSalario').value = employee.salario;
 
-    // Show the Bootstrap modal
-    $('#editModal').modal('show');
+    document.getElementById('apellidos').value = employee.apellidos;
+    document.getElementById('nombres').value = employee.nombres;
+    document.getElementById('departamento').value = employee.departamento;
+    document.getElementById('municipio').value = employee.municipio;
+    document.getElementById('fechaNacimiento').value = employee.fechaNacimiento;
+    document.getElementById('salario').value = employee.salario;
+    
+   
+    document.querySelector('button[type="submit"]').setAttribute('disabled', 'true');
+
+
+    const saveButton = document.createElement('button');
+    saveButton.textContent = 'Guardar Cambios';
+    saveButton.classList.add('btn', 'btn-primary');
+    saveButton.addEventListener('click', () => {
+      employee.apellidos = document.getElementById('apellidos').value;
+      employee.nombres = document.getElementById('nombres').value;
+      employee.departamento = document.getElementById('departamento').value;
+      employee.municipio = document.getElementById('municipio').value;
+      employee.fechaNacimiento = document.getElementById('fechaNacimiento').value;
+      employee.salario = document.getElementById('salario').value;
+      guardarEmpleadosEnLocalStorage();
+      mostrarEmpleados();
+     
+      formulario.reset();
+      saveButton.remove();
+
+      document.querySelector('button[type="submit"]').removeAttribute('disabled');
+    });
+
+    formulario.appendChild(saveButton);
   }
 }
 
-// Add a function to save employee changes from the modal
-function saveEmployeeChanges() {
-  const id = getIdFromEditForm(); // Implement this function to get the employee ID from the modal form
-  const employee = empleados.find(emp => emp.id === id);
-  if (employee) {
-    employee.apellidos = document.getElementById('editApellidos').value;
-    employee.nombres = document.getElementById('editNombres').value;
-    employee.departamento = document.getElementById('editDepartamento').value;
-    employee.municipio = document.getElementById('editMunicipio').value;
-    employee.fechaNacimiento = document.getElementById('editFechaNacimiento').value;
-    employee.salario = document.getElementById('editSalario').value;
-
-    guardarEmpleadosEnLocalStorage();
-    mostrarEmpleados();
-
-    // Close the Bootstrap modal
-    $('#editModal').modal('hide');
-  }
-}
-function getIdFromEditForm() {
-  const modal = document.getElementById('editModal');
-  if (modal) {
-    // Assuming that your modal contains an input field with an ID of 'editEmployeeId'
-    const idInput = modal.querySelector('#editEmployeeId');
-    if (idInput) {
-      const id = parseInt(idInput.value);
-      return id;
-    }
-  }
-  // If the ID couldn't be found or extracted, return null or some default value.
-  return null;
-}
 
 function mostrarEmpleados() {
   tablaEmpleados.innerHTML = '';
@@ -174,4 +164,35 @@ function mostrarEmpleados() {
     tablaEmpleados.appendChild(fila);
   });
 }
+
+function openEmployeeDetailsModal(employee) {
+  const modalTitle = document.getElementById('employeeDetailsModalLabel');
+  const modalBody = document.getElementById('employeeDetails');
+
+  modalTitle.textContent = `Detalles del Empleado #${employee.id}`;
+  modalBody.innerHTML = `
+    <p>Apellidos: ${employee.apellidos}</p>
+    <p>Nombres: ${employee.nombres}</p>
+    <p>Departamento: ${employee.departamento}</p>
+    <p>Municipio: ${employee.municipio}</p>
+    <p>Fecha de Nacimiento: ${employee.fechaNacimiento}</p>
+    <p>Salario: ${employee.salario}</p>
+    <p>Estado: ${employee.activo ? 'Activo' : 'Inactivo'}</p>
+  `;
+
+  $('#employeeDetailsModal').modal('show');
+}
+
+document.getElementById('searchButton').addEventListener('click', () => {
+  const searchId = parseInt(document.getElementById('searchInput').value);
+  const foundEmployee = empleados.find(emp => emp.id === searchId);
+
+  if (foundEmployee) {
+    openEmployeeDetailsModal(foundEmployee);
+  } else {
+    alert('Empleado no encontrado. Por favor, intente con otro ID.');
+  }
+});
+
+
 mostrarEmpleados();
